@@ -11,7 +11,7 @@ import time
 
 class Player:
     # Create character
-    def __init__(self, first_name, surname, max_hp, max_mp, strength, ac, charged, moves, xp, level):
+    def __init__(self, first_name, surname, max_hp, max_mp, strength, ac, charged, moves, xp, level, shmeckle):
         self.first_name = first_name
         self.surname = surname
         self.max_hp = max_hp
@@ -26,6 +26,9 @@ class Player:
         self.xp = xp
         self.level = level
         self.strength_point = 0
+        self.xp_til_level_up = 6
+        self.tot_xp = 0
+        self.shmeckle = shmeckle
     
     # Take damage
     def take_damage(self, amount):
@@ -147,9 +150,10 @@ class Player:
                 break
             print(f"Boon {choice} not recognized")
 
-        print("HP and Mana restored")
+        print("HP and Mana fully restored")
         self.hp = self.max_hp
         self.mana = self.max_mp
+        self.level += 1
 
 
 moves_list = []
@@ -170,13 +174,12 @@ enemies = [0, 1]
 def make_enemy(type, level):
     global e
     if type == 0:
-        e = Enemy("Target Dummy", "the IV", 15, 0, 1, 11, [dummy_blast], 0, dummy_AI, False, 1, level)
-        for i in range(level-1):
-            e.level_up
+        e = Enemy("Target Dummy", "the IV", 15, 0, 1, 11, [dummy_blast], 0, dummy_AI, False, 1, level, 1)
     if type == 1:
-        e = Enemy("Goblin", "Thief", 12, 5, 1, 14, [shiv, multiStab], 0, goblin_AI, False, 5, level)
-        for i in range(level-1):
-            e.level_up
+        e = Enemy("Goblin", "Thief", 12, 5, 1, 14, [shiv, multiStab], 0, goblin_AI, False, 5, level, random.randint(5, 7))
+    
+    for i in range(level-1):
+        e.level_up
     
 # Set up character
 print()
@@ -230,13 +233,22 @@ do_combat(player, e)
 
 print()
 if player.is_alive():
-    print(f"{player.first_name + " " + player.surname} wins!")
+    print(f"{player.first_name} {player.surname} wins!")
+    print(f"{player.first_name} gained {e.xp} xp!")
+    player.xp += e.xp
+    player.tot_xp += e.xp
+    if player.xp == player.xp_til_level_up:
+        player.level_up()
+        player.xp = 0
+        player.xp_til_level_up = math.floor(player.xp_til_level_up * 1.3) + math.floor(player.level / 5)
+
     print()
+
     print("Starting new combat...")
     make_enemy(random.randint(0, len(enemies)-1), 1)
     do_combat(player, e)
 elif not player.is_alive():
-    print(f"{player.first_name + " " + player.surname} is defeated...")
+    print(f"{player.first_name} {player.surname} is defeated...")
     print("[red]GAME OVER")
 else:
     print("No victor")

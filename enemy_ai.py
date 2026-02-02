@@ -23,7 +23,7 @@ def goblin_AI(self, target):
 
     choice = random.randint(1,6)
     if self.mana >= 5:
-        print(f"{self.first_name} is  using MultiStab on {target.first_name}!")
+        print(f"{self.first_name} is  using {self.moves[1].name} on {target.first_name}!")
         self.moves[1].use_wpn(self, target)
         return(True)
     elif choice == 6 or self.mana == 0:

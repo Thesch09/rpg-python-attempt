@@ -3,7 +3,7 @@ from rich import print
 
 class Enemy:
     # Create the Enemy
-    def __init__(self, first_name, surname, max_hp, max_mp, strength, ac, moves, special, AI, charged, xp, level):
+    def __init__(self, first_name, surname, max_hp, max_mp, strength, ac, moves, special, AI, charged, xp, level, shmeckle):
         self.first_name = first_name
         self.surname = surname
         self.max_hp = max_hp
@@ -19,6 +19,7 @@ class Enemy:
         self.charged = charged
         self.xp = xp
         self.level = level
+        self.shmeckle = shmeckle
 
     
     # Take damage
