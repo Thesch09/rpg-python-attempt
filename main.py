@@ -1,131 +1,17 @@
 from rich import print
-from AI_module import dummy_AI
-from AI_module import goblin_AI
+from enemy_ai import dummy_AI
+from enemy_ai import goblin_AI
+from moves import Moves
+from enemy import Enemy
 # from oppgave_6_NPC_module import enemyList
 import random
 import math
 import time
 
 
-
-class Moves:
-    # Create move
-    def __init__(self, name, mana, up_dmg, dwn_dmg, dmg, hit_plus, hits, type):
-        self.name = name
-        self.mana = mana
-        # up_dmg and dwn_dmg are how much a move can deal additionally
-        self.up_dmg = up_dmg
-        self.dwn_dmg = dwn_dmg
-        self.dmg = dmg
-        self.hits = hits
-        self.hit_plus = hit_plus
-        self.type = type
-
-    def use_wpn(self, user, target):
-        if self.type == "attack":
-            print(f"{user.first_name} is attempting to use {self.name} on {target.first_name}!")
-            
-            if user.mana < self.mana:
-                print(f"{user.first_name} doesn't have enough mana to use this move!")
-                return
-            user.mana -= self.mana
-            print(f"{user.first_name} used {self.mana} mana")
-
-            dice = random.randint(1, 20)
-            print(f"{user.first_name} rolls a {dice}")
-            print(f"With {self.name}'s bonus to hit it's {dice + self.hit_plus}")
-
-            # We do love our chances
-            
-            if self.hits < 2:
-                self.hits = 1
-            damage_buff = 1
-            if user.charged:
-                damage_buff *= 1.3
-
-            if dice == 20:
-                print(f"{user.first_name} crits {target.first_name}!!!")
-                damage_buff *= 1.5
-                if not self.hits > 1:
-                    self.hits = 0
-                for i in range(random.randint(1, self.hits+1)):
-                    target.take_damage(self.dmg * damage_buff + random.randint(self.dwn_dmg + 1, self.up_dmg + 1))
-                    time.sleep(0.5)
-            elif dice + self.hit_plus >= target.ac:
-                for i in range(random.randint(1, self.hits)):
-                    target.take_damage(self.dmg * damage_buff + random.randint(self.dwn_dmg, self.up_dmg))
-                    time.sleep(0.5)
-            elif dice == 1:
-                print(f"{user.first_name} critically missed!")
-            else:
-                print(f"{user.first_name} misses")
-            if user.charged:
-                user.charged = False
-                print(f"{user.first_name} is no longer charged!")
-
-class Enemy:
-    # Create the Enemy
-    def __init__(self, first_name, surname, max_hp, max_mp, strength, ac, moves, special, AI, charged):
-        self.first_name = first_name
-        self.surname = surname
-        self.max_hp = max_hp
-        self.hp = self.max_hp
-        self.max_mp = max_mp
-        self.mana = self.max_mp
-        self.strength = strength
-        self.ac = ac
-        self.guard = False
-        self.moves = moves
-        self.special = special
-        self.AI = AI
-        self.charged = charged
-
-    
-    # Take damage
-    def take_damage(self, amount):
-        if self.guard == True:
-            # Reduced if guarding
-            print(f"{self.first_name} will take reduced damage")
-            amount -= amount / 3
-            amount = math.floor(amount)
-
-        self.hp -= amount
-        fatality = ""
-        if self.hp < 0:
-            self.hp = 0
-            fatality = "[red]fatal[/red] "
-        print(f"{self.first_name} took {amount} points of {fatality}damage and now has {self.hp} HP!")
-
-    # Check if alive
-    def is_alive(self):
-        return self.hp > 0
-    
-    # Target dummy's special move
-    def do_nothing(self):
-        print(f"{self.first_name} does nothing")
-
-    # To decrease damage
-    def defend(self):
-        print(f"{self.first_name} is defending!")
-        self.guard = True
-
-    def charge(self): # Back from when it did nothing
-        if not self.charged:
-            print(f"{self.first_name} is charging")
-            self.charged = True
-        else:
-            print(f"{self.first_name} is already charged!")
-        if self.mana < self.max_mp:
-            self.mana += 1
-            print(f"{self.first_name} also regained 1 mana!")
-        else:
-            print(f"{self.first_name} is at full mana!")
-
-
-
 class Player:
     # Create character
-    def __init__(self, first_name, surname, max_hp, max_mp, strength, ac, charged, moves):
+    def __init__(self, first_name, surname, max_hp, max_mp, strength, ac, charged, moves, xp, level):
         self.first_name = first_name
         self.surname = surname
         self.max_hp = max_hp
@@ -137,6 +23,9 @@ class Player:
         self.guard = False
         self.charged = charged
         self.moves = moves
+        self.xp = xp
+        self.level = level
+        self.strength_point = 0
     
     # Take damage
     def take_damage(self, amount):
@@ -175,49 +64,93 @@ class Player:
         print(f"{self.first_name} is defending!")
         self.guard = True
 
-# Player turn
-def player_turn():
-    print("It's your turn! What do you want to do?")
-    print()
-    print(player.first_name, player.surname)
-    print(f"[red]HP: {player.hp}[/red]/[red]{player.max_hp}[/red] || [blue]Mana: {player.mana}[/blue]/[blue]{player.max_mp}[/blue] || ", end="")
-    if player.charged:
-        print("[yellow]Charged!")
-    else:
-        print("[yellow]Not charged!")
-    print()
-    print("1) Attack")
-    print("2) Defend")
-    print("3) Charge")
-    print()
-    choice = ""
-    while True:
-        choice = input("What do you do? ")
-        if choice == "1":
-            for i in range(len(player.moves)):
-                print(player.moves[i-1].name)
-            choice = input("Which attack do you use? (type 'back' to go back) \n").lower().strip()
-            for i in range(len(player.moves)):
-                if player.moves[i-1].name.lower() == choice:
-                    choice = player.moves[i-1]
-                    choice = player.moves.index(choice)
-                    print()
-                    return(player.moves[choice].use_wpn(player, e))
+    def turn(self):
+        # Player turn
 
-                elif choice == "back":
-                    print()
-
-                else:
-                    print("Attack not recognized")
-        
-        elif choice == "2":
-            return(player.defend())
-
-        elif choice == "3":
-            return(player.do_nothing())
-
+        print("It's your turn! What do you want to do?")
+        print()
+        print(self.first_name, self.surname)
+        print(f"[red]HP: {self.hp}[/red]/[red]{self.max_hp}[/red] || [blue]Mana: {self.mana}[/blue]/[blue]{self.max_mp}[/blue] || ", end="")
+        if self.charged:
+            print("[yellow]Charged!")
         else:
-            print(f"Choice {choice} not recognized, try again")
+            print("[yellow]Not charged!")
+        print()
+        print("1) Attack")
+        print("2) Defend")
+        print("3) Charge")
+        print()
+        choice = ""
+        while True:
+            choice = input("What do you do? ").strip().lower()
+            if choice == "1" or choice == "attack":
+                for i in range(len(self.moves)):
+                    print(self.moves[i-1].name)
+                choice = input("Which attack do you use? (type 'back' to go back) \n").lower().strip()
+                for i in range(len(self.moves)):
+                    if self.moves[i-1].name.lower() == choice:
+                        choice = self.moves[i-1]
+                        choice = self.moves.index(choice)
+                        print()
+                        return(self.moves[choice].use_wpn(player, e))
+
+                    elif choice == "back":
+                        print()
+
+                    else:
+                        print("Attack not recognized")
+            
+            elif choice == "2" or choice == "defend":
+                self.defend()
+                return
+
+            elif choice == "3" or choice == "charge":
+                self.do_nothing()
+                return
+
+            else:
+                print(f"Choice {choice} not recognized, try again")
+
+    def level_up(self):
+        print(f"{self.first_name} {self.surname} has leveled up!")
+
+        new_val = 3 + math.floor(self.strength) * 2
+        print(f"{self.first_name} got {new_val} max HP!")
+        self.max_hp += new_val
+
+        new_val = 3 + math.floor(self.strength) * 1.1
+        print(f"{self.first_name} got {new_val} max MP!")
+        self.max_mp += new_val
+
+        print(f"Since {self.first_name}  {self.surname} leveled up, they can get a boon!")
+        print()
+        print(f"1) +1 strenght point")
+        print(f"2) +D4 max HP")
+        print(f"3) +D2 max Mana")
+        choice = input("What do you pick? ")
+        while True:
+            if choice == "1":
+                self.strength_point += 0.25
+                print(f"Gained 1 strenght point")
+                if self.strength_point == 1:
+                    print(f"Full strenght achieved! Now at {self.strength}")
+                    self.strength_point = 0
+                    self.strength += 1
+                break
+            elif choice == "2":
+                new_val = random.randint(1,4)
+                print(f"Gained {new_val} max HP!")
+                break
+            elif choice == "3":
+                new_val = random.randint(1,2)
+                print(f"Gained {new_val} max Mana!")
+                break
+            print(f"Boon {choice} not recognized")
+
+        print("HP and Mana restored")
+        self.hp = self.max_hp
+        self.mana = self.max_mp
+
 
 moves_list = []
 # set up moves
@@ -234,12 +167,17 @@ shiv = makeMove("Shiv", 0, 3, 0, 1, 0, 1 , "attack")
 # Make enemy
 
 enemies = [0, 1]
-def make_enemy(type):
+def make_enemy(type, level):
+    global e
     if type == 0:
-        return Enemy("Target Dummy", "the IV", 15, 0, 1, 11, [dummy_blast], 0, dummy_AI, False)
+        e = Enemy("Target Dummy", "the IV", 15, 0, 1, 11, [dummy_blast], 0, dummy_AI, False, 1, level)
+        for i in range(level-1):
+            e.level_up
     if type == 1:
-        return Enemy("Goblin", "Thief", 12, 5, 1, 14, [shiv, multiStab], 0, goblin_AI, False)
-
+        e = Enemy("Goblin", "Thief", 12, 5, 1, 14, [shiv, multiStab], 0, goblin_AI, False, 5, level)
+        for i in range(level-1):
+            e.level_up
+    
 # Set up character
 print()
 name = input("What will be the first name of your character? \n").strip()
@@ -250,12 +188,14 @@ if name == "":
 if surname == "":
     surname = "Shmlinko"
 
-player = Player(name, surname, 20, 5, 3, 13, 0, [slash, multiStab])
-e = make_enemy(0)
+player = Player(name, surname, 20, 5, 3, 13, 0, [slash, multiStab], 0, 1)
+make_enemy(0,1)
 
 def do_combat(player, e):
-    print(player.first_name, player.surname, player.hp)
-    print(e.first_name, e.surname, e.hp)
+
+    print(f"{player.first_name} {player.surname}, [red]{player.hp} HP[/red], level {player.level}")
+    print("VS")
+    print(f"{e.first_name} {e.surname}, [red]{e.hp} HP[/red], level {player.level}")
     turn_count = 1
 
     while player.is_alive() and e.is_alive():
@@ -266,7 +206,7 @@ def do_combat(player, e):
         print()
 
         # Player action
-        player_turn()
+        player.turn()
         time.sleep(0.5)
         if not e.is_alive():
             break
@@ -293,7 +233,7 @@ if player.is_alive():
     print(f"{player.first_name + " " + player.surname} wins!")
     print()
     print("Starting new combat...")
-    e = make_enemy(random.randint(0, len(enemies)-1))
+    make_enemy(random.randint(0, len(enemies)-1), 1)
     do_combat(player, e)
 elif not player.is_alive():
     print(f"{player.first_name + " " + player.surname} is defeated...")
