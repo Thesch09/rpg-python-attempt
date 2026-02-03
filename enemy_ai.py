@@ -32,3 +32,19 @@ def goblin_AI(self, target):
         self.defend()
     else:
         self.moves[0].use_wpn(self, target)
+
+def rock_AI(self, target):
+    print(f"There is a {self.surname} of the {self.firstname} variety here.")
+    print()
+
+    choice = random.randint(1,100)
+    if choice == 100 and self.mana == 99:
+        self.moves[1].use_wpn(self, target)
+    elif choice > 73:
+        self.moves[0].use_wpn(self, target)
+        self.mana += 5
+    elif choice >= 20:
+        self.defend()
+    else:
+        self.do_nothing()
+        self.mana += 1

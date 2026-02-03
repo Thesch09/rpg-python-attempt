@@ -66,3 +66,9 @@ class Enemy:
         self.max_mp += 2 + math.floor(self.strength * 1.1)
         self.hp = self.max_hp
         self.mana = self.max_mp
+    
+    def fix_stf(self):
+        if self.mana > self.max_mp:
+            self.mana = self.max_mp
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp

@@ -1,6 +1,11 @@
 from rich import print
+
+# AIs
 from enemy_ai import dummy_AI
 from enemy_ai import goblin_AI
+from enemy_ai import rock_AI
+
+
 from moves import Moves
 from enemy import Enemy
 # from oppgave_6_NPC_module import enemyList
@@ -154,6 +159,12 @@ class Player:
         self.hp = self.max_hp
         self.mana = self.max_mp
         self.level += 1
+    
+    def fix_stf(self):
+        if self.mana > self.max_mp:
+            self.mana = self.max_mp
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp
 
 
 moves_list = []
@@ -167,16 +178,23 @@ slash = makeMove("Slash", 0, 1, -1, 3, 1, 1, "attack")
 multiStab = makeMove("MultiStab", 5, 2, -3, 4, -2, 5, "attack")
 dummy_blast = makeMove("Dummy Blast", 0, 0, 0, 999, 999, 1, "attack")
 shiv = makeMove("Shiv", 0, 3, 0, 1, 0, 1 , "attack")
+smack = makeMove("Smack", 0, 3, 0, 2, 0, 1, "attack")
+pebbles = makeMove("Pebbles", 0, 1, 0, 0, -1, 3, "attack")
+smnBoulder = makeMove("Summon Boulder. Like that's literally a boulder, a physical boulder! This isn't any hehehaha boulder, if this hits you, you're DEAD. So anyway... Summon Boulder", 99, 99, -99, 200, -10, 1, "attack")
 
 # Make enemy
 
-enemies = [0, 1]
+enemies = [0, 1, 2]
 def make_enemy(type, level):
     global e
     if type == 0:
         e = Enemy("Target Dummy", "the IV", 15, 0, 1, 11, [dummy_blast], 0, dummy_AI, False, 1, level, 1)
     if type == 1:
         e = Enemy("Goblin", "Thief", 12, 5, 1, 14, [shiv, multiStab], 0, goblin_AI, False, 5, level, random.randint(5, 7))
+    if type == 2:
+        e = Enemy("Target Smarty", "McPants", 7, 0, -1, 8, [smack], 0, dummy_AI, True, 1, level, 1)
+    if type == 3:
+        e = Enemy("Goblin", "Rock",20, 99, 5, 17, [pebbles, smnBoulder], 0, rock_AI, False, 10, level, 15)
     
     for i in range(level-1):
         e.level_up
@@ -191,8 +209,8 @@ if name == "":
 if surname == "":
     surname = "Shmlinko"
 
-player = Player(name, surname, 20, 5, 3, 13, 0, [slash, multiStab], 0, 1)
-make_enemy(0,1)
+player = Player(name, surname, 20, 5, 3, 13, 0, [slash, multiStab], 0, 1, -100)
+make_enemy(2,1)
 
 def do_combat(player, e):
 
@@ -205,6 +223,7 @@ def do_combat(player, e):
         print()
         print()
         print(f"It is turn number {turn_count}")
+        player.fix_stf()
         time.sleep(1)
         print()
 
@@ -214,6 +233,7 @@ def do_combat(player, e):
         if not e.is_alive():
             break
         print()
+        e.fix_stf()
 
         # Enemy action
         # Un-hardcode it <- done <- Less done <- More done
@@ -231,24 +251,26 @@ def do_combat(player, e):
 
 do_combat(player, e)
 
-print()
-if player.is_alive():
-    print(f"{player.first_name} {player.surname} wins!")
-    print(f"{player.first_name} gained {e.xp} xp!")
-    player.xp += e.xp
-    player.tot_xp += e.xp
-    if player.xp == player.xp_til_level_up:
-        player.level_up()
-        player.xp = 0
-        player.xp_til_level_up = math.floor(player.xp_til_level_up * 1.3) + math.floor(player.level / 5)
-
+while True:
     print()
+    if player.is_alive():
+        print(f"{player.first_name} {player.surname} wins!")
+        print(f"{player.first_name} gained {e.xp} xp!")
+        player.xp += e.xp
+        player.tot_xp += e.xp
+        if player.xp == player.xp_til_level_up:
+            player.level_up()
+            player.xp = 0
+            player.xp_til_level_up = math.floor(player.xp_til_level_up * 1.3) + math.floor(player.level / 5)
 
-    print("Starting new combat...")
-    make_enemy(random.randint(0, len(enemies)-1), 1)
-    do_combat(player, e)
-elif not player.is_alive():
-    print(f"{player.first_name} {player.surname} is defeated...")
-    print("[red]GAME OVER")
-else:
-    print("No victor")
+        print()
+
+        print("Starting new combat...")
+        make_enemy(random.randint(1, len(enemies)-1), 1)
+        do_combat(player, e)
+    elif not player.is_alive():
+        print(f"{player.first_name} {player.surname} is defeated...")
+        print("[red]GAME OVER")
+        break
+    else:
+        print("No victor")
