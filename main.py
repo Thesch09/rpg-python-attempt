@@ -6,6 +6,10 @@ from enemy_ai import goblin_AI
 from enemy_ai import rock_AI
 
 
+# Events
+from events import do_combat
+
+
 from moves import Moves
 from enemy import Enemy
 # from oppgave_6_NPC_module import enemyList
@@ -219,57 +223,13 @@ if surname == "":
 player = Player(name, surname, 20, 5, 3, 13, 0, [slash], 0, 1, -100)
 make_enemy(2,1)
 
-def do_combat(player, e):
 
-    print(f"{player.first_name} {player.surname}, [red]{player.hp} HP[/red], level {player.level}")
-    print("VS")
-    print(f"{e.first_name} {e.surname}, [red]{e.hp} HP[/red], level {player.level}")
-    turn_count = 1
-
-    while player.is_alive() and e.is_alive():
-        print()
-        print()
-        print(f"It is turn number {turn_count}")
-        player.fix_stf()
-        time.sleep(1)
-        print()
-
-        # Player action
-        player.turn()
-        time.sleep(0.5)
-        if not e.is_alive():
-            break
-        print()
-        e.fix_stf()
-
-        # Enemy action
-        # Un-hardcode it <- done <- Less done <- More done
-
-        e.AI(e, player)
-            
-        time.sleep(0.5)
-        print()
-        
-        # Increase turn_count so the fight doesn't last forever
-        turn_count += 1
-        if turn_count > 50:
-            print("The battle ran out of time!")
-            return
 
 def crossroads():
     print(f"In front of you there are 2 paths.")
 
-    '''
-    #Event ideas#
-    Combat
-    Shop
-    HP fount
-    MP fount
-    Dead traveler
-    Town
-    Little Girl (THUNDERSPELL)
-    '''
     
+
 
 
 

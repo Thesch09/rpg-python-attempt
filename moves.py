@@ -5,13 +5,14 @@ from rich import print
 
 class Moves:
     # Create move
-    def __init__(self, name, mana, up_dmg, dwn_dmg, dmg, hit_plus, hits, type):
+    def __init__(self, name, mana, up_dmg, dwn_dmg, dmg, hit_plus, min_hits, hits, cw, type):
         self.name = name
         self.mana = mana
         # up_dmg and dwn_dmg are how much a move can deal additionally
         self.up_dmg = up_dmg
         self.dwn_dmg = dwn_dmg
         self.dmg = dmg
+        self.min_hits = min_hits
         self.hits = hits
         self.hit_plus = hit_plus
         self.type = type
