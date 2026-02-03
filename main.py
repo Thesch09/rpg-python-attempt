@@ -34,6 +34,8 @@ class Player:
         self.xp_til_level_up = 6
         self.tot_xp = 0
         self.shmeckle = shmeckle
+        self.lvl_rewards = [multiStab]
+        self.lvl_rewards_no = [3]
     
     # Take damage
     def take_damage(self, amount):
@@ -122,15 +124,15 @@ class Player:
     def level_up(self):
         print(f"{self.first_name} {self.surname} has leveled up!")
 
-        new_val = 3 + math.floor(self.strength) * 2
+        new_val = 3 + math.floor(self.strength * 2)
         print(f"{self.first_name} got {new_val} max HP!")
         self.max_hp += new_val
 
-        new_val = 3 + math.floor(self.strength) * 1.1
+        new_val = 1 + math.floor(self.strength * 1.1)
         print(f"{self.first_name} got {new_val} max MP!")
         self.max_mp += new_val
 
-        print(f"Since {self.first_name}  {self.surname} leveled up, they can get a boon!")
+        print(f"Since {self.first_name}  {self.surname} leveled up, they get a boon!")
         print()
         print(f"1) +1 strenght point")
         print(f"2) +D4 max HP")
@@ -154,6 +156,11 @@ class Player:
                 print(f"Gained {new_val} max Mana!")
                 break
             print(f"Boon {choice} not recognized")
+
+        for i in range(len(self.lvl_rewards_no)):
+            if self.lvl_rewards_no[i-1] == self.level:
+                print(f"{self.first_name}  {self.surname} has learned a new move! They got {self.lvl_rewards[i-1]}")
+                list.append(self.moves, self.lvl_rewards[i-1])
 
         print("HP and Mana fully restored")
         self.hp = self.max_hp
@@ -184,7 +191,7 @@ smnBoulder = makeMove("Summon Boulder. Like that's literally a boulder, a physic
 
 # Make enemy
 
-enemies = [0, 1, 2]
+enemies = [0, 1, 2, 3]
 def make_enemy(type, level):
     global e
     if type == 0:
@@ -209,7 +216,7 @@ if name == "":
 if surname == "":
     surname = "Shmlinko"
 
-player = Player(name, surname, 20, 5, 3, 13, 0, [slash, multiStab], 0, 1, -100)
+player = Player(name, surname, 20, 5, 3, 13, 0, [slash], 0, 1, -100)
 make_enemy(2,1)
 
 def do_combat(player, e):
@@ -249,24 +256,46 @@ def do_combat(player, e):
             print("The battle ran out of time!")
             return
 
+def crossroads():
+    print(f"In front of you there are 2 paths.")
+
+    '''
+    #Event ideas#
+    Combat
+    Shop
+    HP fount
+    MP fount
+    Dead traveler
+    Town
+    Little Girl (THUNDERSPELL)
+    '''
+    
+
+
+
 do_combat(player, e)
 
 while True:
     print()
     if player.is_alive():
         print(f"{player.first_name} {player.surname} wins!")
+        player.shmeckle += e.shmeckle
+        print(f"{player.first_name} got {e.shmeckle} Shmeckles!")
         print(f"{player.first_name} gained {e.xp} xp!")
         player.xp += e.xp
         player.tot_xp += e.xp
-        if player.xp == player.xp_til_level_up:
+        while player.xp >= player.xp_til_level_up:
             player.level_up()
-            player.xp = 0
+            player.xp -= player.xp_til_level_up
             player.xp_til_level_up = math.floor(player.xp_til_level_up * 1.3) + math.floor(player.level / 5)
 
         print()
 
         print("Starting new combat...")
-        make_enemy(random.randint(1, len(enemies)-1), 1)
+
+        temp = random.randint(1, len(enemies)-1)
+        print(temp)
+        make_enemy(temp, 1)
         do_combat(player, e)
     elif not player.is_alive():
         print(f"{player.first_name} {player.surname} is defeated...")

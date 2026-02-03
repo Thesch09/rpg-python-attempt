@@ -34,7 +34,7 @@ def goblin_AI(self, target):
         self.moves[0].use_wpn(self, target)
 
 def rock_AI(self, target):
-    print(f"There is a {self.surname} of the {self.firstname} variety here.")
+    print(f"There is a {self.surname} of the {self.first_name} variety here.")
     print()
 
     choice = random.randint(1,100)

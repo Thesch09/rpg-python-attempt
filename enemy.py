@@ -63,7 +63,7 @@ class Enemy:
             print(f"{self.first_name} is at full mana!")
     def level_up(self):
         self.max_hp += 3 + self.strength * 2
-        self.max_mp += 2 + math.floor(self.strength * 1.1)
+        self.max_mp += 1 + math.floor(self.strength * 1.1)
         self.hp = self.max_hp
         self.mana = self.max_mp
     
