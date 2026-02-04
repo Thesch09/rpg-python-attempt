@@ -32,7 +32,7 @@ class Enemy:
 
         self.hp -= amount
         fatality = ""
-        if self.hp < 0:
+        if self.hp <= 0:
             self.hp = 0
             fatality = "[red]fatal[/red] "
         print(f"{self.first_name} took {amount} points of {fatality}damage and now has {self.hp} HP!")

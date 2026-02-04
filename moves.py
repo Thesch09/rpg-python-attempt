@@ -29,6 +29,10 @@ class Moves:
             user.mana -= self.mana
             print(f"{user.first_name} used {self.mana} mana")
 
+            if self.cw > 0:
+                print(f"But it's on cooldown! ({self.cw})")
+            self.cw = self.cw_max
+
             dice = random.randint(1, 20)
             print(f"{user.first_name} rolls a {dice}")
             if self.hit_plus > 0:
@@ -65,4 +69,5 @@ class Moves:
                 print(f"{user.first_name} is no longer charged!")
     
     def cooldown(self):
-        print()
+        if self.cw_max == -1:
+            print("UNCOOLDOWNABLE")

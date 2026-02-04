@@ -51,7 +51,7 @@ class Player:
 
         self.hp -= amount
         fatality = ""
-        if self.hp < 0:
+        if self.hp <= 0:
             self.hp = 0
             fatality = "[red]fatal[/red] "
         print(f"{self.first_name} took {amount} points of {fatality}damage and now has {self.hp} HP!")
@@ -105,8 +105,14 @@ class Player:
                     if self.moves[i-1].name.lower() == choice:
                         choice = self.moves[i-1]
                         choice = self.moves.index(choice)
+                        temp1 = choice
                         print()
-                        return(self.moves[choice].use_wpn(player, e))
+                        if enemieses > 1:
+                            print("Who do you target?")
+                            for i in range(enemieses):
+                                print(listEnemies[i].name)
+                        else:
+                            return(self.moves[choice].use_wpn(player, e))
 
                     elif choice == "back":
                         print()
@@ -187,7 +193,7 @@ def makeMove(name, mana, up_dmg, dwn_dmg, dmg, hit_plus, min_hits, hits, cw, typ
 
 slash = makeMove("Slash", 0, 1, -1, 3, 1, 1, 1, -1, "attack")
 multiStab = makeMove("MultiStab", 5, 2, -3, 4, -2, 2, 5, -1, "attack")
-dummy_blast = makeMove("Dummy Blast", 0, 0, 0, 999, 999, 1, "attack")
+dummy_blast = makeMove("Dummy Blast", 0, 0, 0, 999, 999, 1, 1, -1, "attack")
 shiv = makeMove("Shiv", 0, 3, 0, 1, 0, 1, 1, -1, "attack")
 smack = makeMove("Smack", 0, 3, 0, 2, 0, 1, 1, -1, "attack")
 pebbles = makeMove("Pebbles", 0, 1, 0, 0, -1, 3, 1, 3, "attack")
@@ -232,8 +238,8 @@ def crossroads():
 
 
 
-
-do_combat(player, e)
+enemieses = 1
+do_combat(player, enemieses, e, "", "")
 
 while True:
     print()
@@ -256,7 +262,8 @@ while True:
         temp = random.randint(1, len(enemies)-1)
         print(temp)
         make_enemy(temp, 1)
-        do_combat(player, e)
+        enemieses = 1
+        do_combat(player, enemieses, e ,"", "")
     elif not player.is_alive():
         print(f"{player.first_name} {player.surname} is defeated...")
         print("[red]GAME OVER")
