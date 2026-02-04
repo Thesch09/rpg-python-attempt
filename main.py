@@ -180,18 +180,18 @@ class Player:
 
 moves_list = []
 # set up moves
-def makeMove(name, mana, up_dmg, dwn_dmg, dmg, hit_plus, hits, type):
-    # print(name, mana, up_dmg, dwn_dmg, dmg, hit_plus, hits, type)
-    moves_list.append([name, mana, up_dmg, dwn_dmg, dmg, hit_plus, hits, type])
-    return Moves(name, mana, up_dmg, dwn_dmg, dmg, hit_plus, hits, type)
+def makeMove(name, mana, up_dmg, dwn_dmg, dmg, hit_plus, min_hits, hits, cw, type):
+    # print(name, mana, up_dmg, dwn_dmg, dmg, hit_plus, min_hits, hits, cw, type)
+    moves_list.append([name, mana, up_dmg, dwn_dmg, dmg, hit_plus, min_hits, hits, cw, type])
+    return Moves(name, mana, up_dmg, dwn_dmg, dmg, hit_plus, min_hits, hits, cw, type)
 
-slash = makeMove("Slash", 0, 1, -1, 3, 1, 1, "attack")
-multiStab = makeMove("MultiStab", 5, 2, -3, 4, -2, 5, "attack")
+slash = makeMove("Slash", 0, 1, -1, 3, 1, 1, 1, -1, "attack")
+multiStab = makeMove("MultiStab", 5, 2, -3, 4, -2, 2, 5, -1, "attack")
 dummy_blast = makeMove("Dummy Blast", 0, 0, 0, 999, 999, 1, "attack")
-shiv = makeMove("Shiv", 0, 3, 0, 1, 0, 1 , "attack")
-smack = makeMove("Smack", 0, 3, 0, 2, 0, 1, "attack")
-pebbles = makeMove("Pebbles", 0, 1, 0, 0, -1, 3, "attack")
-smnBoulder = makeMove("Summon Boulder. Like that's literally a boulder, a physical boulder! This isn't any hehehaha boulder, if this hits you, you're DEAD. So anyway... Summon Boulder", 99, 99, -99, 200, -10, 1, "attack")
+shiv = makeMove("Shiv", 0, 3, 0, 1, 0, 1, 1, -1, "attack")
+smack = makeMove("Smack", 0, 3, 0, 2, 0, 1, 1, -1, "attack")
+pebbles = makeMove("Pebbles", 0, 1, 0, 0, -1, 3, 1, 3, "attack")
+smnBoulder = makeMove("Summon Boulder. Like that's literally a boulder, a physical boulder! This isn't any hehehohohaha boulder, if this hits you, you're DEAD. So anyway... Summon Boulder", 99, 99, -99, 200, -10, 1, 1, 99, "attack")
 
 # Make enemy
 

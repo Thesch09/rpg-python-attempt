@@ -16,6 +16,8 @@ class Moves:
         self.hits = hits
         self.hit_plus = hit_plus
         self.type = type
+        self.cw_max = cw
+        self.cw = 0
 
     def use_wpn(self, user, target):
         if self.type == "attack":
@@ -61,3 +63,6 @@ class Moves:
             if user.charged:
                 user.charged = False
                 print(f"{user.first_name} is no longer charged!")
+    
+    def cooldown(self):
+        print()
